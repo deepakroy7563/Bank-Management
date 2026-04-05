@@ -1,0 +1,50 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+const userRouter = require('./routes/userRoutes');
+// const adminRouter = require('./routes/adminRoutes');
+const cors = require('cors');
+const cibilrouter = require('./routes/aiCibil');
+
+// Load environment variables
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
+
+const app = express();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+/* =========================
+   ✅ ROOT ROUTE (IMPORTANT)
+========================= */
+app.get('/', (req, res) => {
+  res.send('Server is running successfully 🚀');
+});
+
+/* =========================
+   ✅ API ROUTES
+========================= */
+app.use('/api/users', userRouter);
+app.use('/api', cibilrouter);
+// app.use('/api/admin', adminRouter);
+
+/* =========================
+   ❗ 404 ERROR HANDLER (LAST)
+========================= */
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
+
+/* =========================
+   🚀 SERVER START
+========================= */
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`AI ${process.env.GROQ_API_KEY} is ready to serve!`);
+});
